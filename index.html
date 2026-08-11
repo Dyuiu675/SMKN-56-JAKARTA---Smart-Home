@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070817">
+  <title>Smart School Home</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <img id="schoolLogo" src="assets/logo.png" alt="Logo Sekolah">
+      </div>
+      <div>
+        <h1>SMART<span>HOME</span></h1>
+        <p id="schoolName">SMART SCHOOL</p>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-btn active" data-section="dashboard">
+        <span>⌂</span> Dashboard
+      </button>
+      <button class="nav-btn" data-section="control">
+        <span>⚙</span> Smart Control
+      </button>
+      <button class="nav-btn" data-section="security">
+        <span>◉</span> Security
+      </button>
+      <button class="nav-btn" data-section="activity">
+        <span>≡</span> Activity Log
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="connection-pill">
+        <span id="connectionDot" class="dot offline"></span>
+        <span id="connectionText">OFFLINE</span>
+      </div>
+      <small>IoT Control System v1.0</small>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SMART SCHOOL IOT SYSTEM</p>
+        <h2 id="pageTitle">Dashboard</h2>
+      </div>
+      <div class="top-right">
+        <div class="clock-box">
+          <strong id="clock">00:00:00</strong>
+          <span id="date">Loading date...</span>
+        </div>
+        <button id="mobileMenu" class="icon-btn">☰</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="hero-card">
+        <div>
+          <p class="eyebrow">WELCOME TO</p>
+          <h3 id="heroSchool">SMART SCHOOL HOME</h3>
+          <p class="hero-desc">
+            Sistem monitoring dan kontrol gerbang, pencahayaan,
+            serta keamanan sekolah secara real-time.
+          </p>
+        </div>
+        <div class="hero-gate">
+          <div class="gate-visual">
+            <span class="gate-icon">⌂</span>
+            <span class="wifi-ring">◌</span>
+          </div>
+          <div>
+            <small>GATE STATUS</small>
+            <strong id="gateStatusHero">CLOSED</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon cyan">⌁</div>
+          <div>
+            <span>Vehicle Distance</span>
+            <strong><b id="distanceValue">---</b> <small>cm</small></strong>
+          </div>
+          <span id="vehicleBadge" class="badge neutral">CLEAR</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">◉</div>
+          <div>
+            <span>IR Sensor 1</span>
+            <strong id="ir1Value">CLEAR</strong>
+          </div>
+          <span id="ir1Badge" class="badge neutral">NORMAL</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pink">◉</div>
+          <div>
+            <span>IR Sensor 2</span>
+            <strong id="ir2Value">CLEAR</strong>
+          </div>
+          <span id="ir2Badge" class="badge neutral">NORMAL</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">●</div>
+          <div>
+            <span>System Mode</span>
+            <strong id="modeValue">AUTO</strong>
+          </div>
+          <span id="securityMini" class="badge warning">SECURITY OFF</span>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="panel gate-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">SMART GATE</p>
+              <h3>Automatic Gate</h3>
+            </div>
+            <span class="live-indicator"><i></i> LIVE</span>
+          </div>
+
+          <div class="gate-stage">
+            <div class="road"></div>
+            <div id="gateArm" class="gate-arm"></div>
+            <div class="gate-post"></div>
+            <div id="carIcon" class="car">🚗</div>
+          </div>
+
+          <div class="gate-footer">
+            <div>
+              <span>Distance</span>
+              <strong><span id="distanceBig">---</span> cm</strong>
+            </div>
+            <div>
+              <span>Gate</span>
+              <strong id="gateStatus">CLOSED</strong>
+            </div>
+            <button class="primary-btn" onclick="sendGate('open')">OPEN GATE</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">SYSTEM</p>
+              <h3>Quick Status</h3>
+            </div>
+          </div>
+
+          <div class="device-list">
+            <div class="device-row">
+              <div class="device-symbol">🚪</div>
+              <div><strong>Gate Servo</strong><span id="gateDeviceText">Closed</span></div>
+              <span id="gateDot" class="status-dot"></span>
+            </div>
+            <div class="device-row">
+              <div class="device-symbol">💡</div>
+              <div><strong>Area Lamp 1</strong><span id="lamp1Text">OFF</span></div>
+              <span id="lamp1Dot" class="status-dot"></span>
+            </div>
+            <div class="device-row">
+              <div class="device-symbol">💡</div>
+              <div><strong>Area Lamp 2</strong><span id="lamp2Text">OFF</span></div>
+              <span id="lamp2Dot" class="status-dot"></span>
+            </div>
+            <div class="device-row">
+              <div class="device-symbol">🛡</div>
+              <div><strong>Security</strong><span id="securityText">DISARMED</span></div>
+              <span id="securityDot" class="status-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel activity-preview">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">REAL-TIME</p>
+            <h3>Latest Activity</h3>
+          </div>
+          <button class="text-btn" onclick="showSection('activity')">View All →</button>
+        </div>
+        <div id="activityPreview" class="activity-list"></div>
+      </div>
+    </section>
+
+    <!-- CONTROL -->
+    <section id="control" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">REMOTE CONTROL</p>
+        <h3>Smart Control Center</h3>
+        <p>Kontrol perangkat sekolah melalui internet menggunakan MQTT.</p>
+      </div>
+
+      <div class="control-grid">
+        <div class="control-card large">
+          <div class="control-title">
+            <span class="control-icon">🚪</span>
+            <div><h3>Smart Gate</h3><p>Servo gate controller</p></div>
+          </div>
+          <div class="big-status" id="controlGateStatus">CLOSED</div>
+          <div class="two-buttons">
+            <button class="primary-btn" onclick="sendGate('open')">OPEN</button>
+            <button class="secondary-btn" onclick="sendGate('close')">CLOSE</button>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="control-title">
+            <span class="control-icon">💡</span>
+            <div><h3>Area Lamp 1</h3><p>IR Sensor 1</p></div>
+          </div>
+          <label class="switch-row">
+            <span id="lamp1ControlLabel">OFF</span>
+            <input id="lamp1Switch" type="checkbox" onchange="toggleLamp(1, this.checked)">
+            <span class="switch"></span>
+          </label>
+        </div>
+
+        <div class="control-card">
+          <div class="control-title">
+            <span class="control-icon">💡</span>
+            <div><h3>Area Lamp 2</h3><p>IR Sensor 2</p></div>
+          </div>
+          <label class="switch-row">
+            <span id="lamp2ControlLabel">OFF</span>
+            <input id="lamp2Switch" type="checkbox" onchange="toggleLamp(2, this.checked)">
+            <span class="switch"></span>
+          </label>
+        </div>
+
+        <div class="control-card">
+          <div class="control-title">
+            <span class="control-icon">⚡</span>
+            <div><h3>Operation Mode</h3><p>Automatic / manual</p></div>
+          </div>
+          <div class="segmented">
+            <button id="autoModeBtn" class="selected" onclick="setMode('AUTO')">AUTO</button>
+            <button id="manualModeBtn" onclick="setMode('MANUAL')">MANUAL</button>
+          </div>
+        </div>
+
+        <div class="control-card security-card">
+          <div class="control-title">
+            <span class="control-icon">🛡</span>
+            <div><h3>Security System</h3><p>IR movement detection</p></div>
+          </div>
+          <button id="securityButton" class="security-toggle" onclick="toggleSecurity()">
+            <span id="securityButtonIcon">◉</span>
+            <span id="securityButtonText">ARM SECURITY</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECURITY -->
+    <section id="security" class="section">
+      <div class="security-hero" id="securityHero">
+        <div class="shield">🛡</div>
+        <div>
+          <p class="eyebrow">SECURITY MONITOR</p>
+          <h3 id="securityHeroTitle">SYSTEM DISARMED</h3>
+          <p id="securityHeroDesc">Security mode belum diaktifkan.</p>
+        </div>
+      </div>
+
+      <div class="security-grid">
+        <div class="panel sensor-monitor">
+          <div class="panel-header">
+            <h3>Motion Sensors</h3>
+            <span class="live-indicator"><i></i> LIVE</span>
+          </div>
+
+          <div class="sensor-big">
+            <div class="sensor-circle" id="sensorCircle1">IR 1</div>
+            <div>
+              <span>AREA 01</span>
+              <strong id="securityIr1">CLEAR</strong>
+              <small>Infrared sensor</small>
+            </div>
+          </div>
+
+          <div class="sensor-big">
+            <div class="sensor-circle" id="sensorCircle2">IR 2</div>
+            <div>
+              <span>AREA 02</span>
+              <strong id="securityIr2">CLEAR</strong>
+              <small>Infrared sensor</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel alarm-panel">
+          <div class="panel-header">
+            <h3>Alarm Status</h3>
+          </div>
+          <div id="alarmIcon" class="alarm-icon">🔔</div>
+          <h4 id="alarmTitle">SYSTEM NORMAL</h4>
+          <p id="alarmText">Tidak ada aktivitas mencurigakan.</p>
+          <button id="securityButton2" class="primary-btn" onclick="toggleSecurity()">ARM SECURITY</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section id="activity" class="section">
+      <div class="section-intro row-between">
+        <div>
+          <p class="eyebrow">EVENT HISTORY</p>
+          <h3>Activity Log</h3>
+          <p>Riwayat event yang diterima dari ESP32.</p>
+        </div>
+        <button class="secondary-btn" onclick="clearActivity()">Clear Log</button>
+      </div>
+
+      <div class="panel">
+        <div id="activityFull" class="activity-list full"></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 <b id="footerSchool">Smart School</b></span>
+      <span>ESP32 • MQTT • IoT</span>
+    </footer>
+  </main>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
