@@ -42,5 +42,5 @@ const SCHOOL_CONFIG = {
   schoolName: "SMKN 56 JAKARTA",
   systemName: "SMART SCHOOL HOME",
   // Put the school logo file at: assets/logo.png (same folder as index.html)
-  logo: "logo.png"
+  logo: "assests/logo.png"
 };
