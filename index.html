@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070817">
+  <title>Smart School Home</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+  <div class="bg-grid"></div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <img id="schoolLogo" src="assets/logo.png" alt="Logo Sekolah">
+        <span class="logo-initial">SH</span>
+      </div>
+      <div>
+        <h1>SMART<span>HOME</span></h1>
+        <p id="schoolName">SMART SCHOOL</p>
+      </div>
+    </div>
+
+    <nav>
+      <button class="nav-btn active" data-section="dashboard">
+        <span>⌂</span> Dashboard
+      </button>
+      <button class="nav-btn" data-section="control">
+        <span>⚙</span> Smart Control
+      </button>
+      <button class="nav-btn" data-section="activity">
+        <span>≡</span> Activity Log
+      </button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="connection-pill">
+        <span id="connectionDot" class="dot offline"></span>
+        <span id="connectionText">OFFLINE</span>
+      </div>
+      <small id="lastUpdate">Menunggu data…</small>
+      <small class="version">IoT Control System v2.1</small>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">SMART SCHOOL IOT SYSTEM</p>
+        <h2 id="pageTitle">Dashboard</h2>
+      </div>
+      <div class="top-right">
+        <div class="clock-box">
+          <strong id="clock">00:00:00</strong>
+          <span id="date">Loading date...</span>
+        </div>
+        <button id="mobileMenu" class="icon-btn" aria-label="Menu">☰</button>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section active">
+      <div class="hero-card">
+        <div>
+          <p class="eyebrow">WELCOME TO</p>
+          <h3 id="heroSchool">SMART SCHOOL HOME</h3>
+          <p class="hero-desc">
+            Sistem monitoring dan kontrol gerbang kendaraan, gerbang pejalan kaki,
+            serta pencahayaan taman, jalan, dan garasi secara real-time.
+          </p>
+        </div>
+        <div class="hero-gate">
+          <div class="gate-visual">
+            <span class="gate-icon">⌂</span>
+            <span class="wifi-ring">◌</span>
+          </div>
+          <div>
+            <small>MAIN GATE</small>
+            <strong id="gateStatusHero">CLOSED</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon cyan">⌁</div>
+          <div>
+            <span>Vehicle Distance</span>
+            <strong><b id="distanceValue">---</b> <small>cm</small></strong>
+          </div>
+          <span id="vehicleBadge" class="badge neutral">CLEAR</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">☀</div>
+          <div>
+            <span>Light Sensor (LDR)</span>
+            <strong id="ldrValue">TERANG</strong>
+          </div>
+          <span id="ldrBadge" class="badge neutral">OFF</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon yellow">✋</div>
+          <div>
+            <span>Touch Gate Tengah</span>
+            <strong id="touchStatValue">CLOSED</strong>
+          </div>
+          <span id="touchStatBadge" class="badge neutral">OFF</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pink">💡</div>
+          <div>
+            <span>Lampu Taman &amp; Jalan</span>
+            <strong id="gardenLampValue">OFF</strong>
+          </div>
+          <span id="gardenLampBadge" class="badge neutral">OFF</span>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">🚘</div>
+          <div>
+            <span>Lampu Garasi</span>
+            <strong id="garageLampValue">OFF</strong>
+          </div>
+          <span id="garageLampBadge" class="badge neutral">OFF</span>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="panel gate-panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">SMART GATE</p>
+              <h3>Automatic Vehicle Gate</h3>
+            </div>
+            <span class="live-indicator"><i></i> LIVE</span>
+          </div>
+
+          <div class="gate-stage">
+            <div class="road"></div>
+            <div id="gateArm" class="gate-arm"></div>
+            <div class="gate-post"></div>
+            <div id="carIcon" class="car">🚗</div>
+          </div>
+
+          <div class="gate-footer">
+            <div>
+              <span>Distance</span>
+              <strong><span id="distanceBig">---</span> cm</strong>
+            </div>
+            <div>
+              <span>Gate</span>
+              <strong id="gateStatus">CLOSED</strong>
+            </div>
+            <button class="primary-btn" onclick="sendGate('open')">OPEN GATE</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">SYSTEM</p>
+              <h3>Quick Status</h3>
+            </div>
+          </div>
+
+          <div class="device-list">
+            <div class="device-row">
+              <div class="device-symbol">🚪</div>
+              <div><strong>Main Gate (Vehicle)</strong><span id="gateDeviceText">Closed</span></div>
+              <span id="gateDot" class="status-dot"></span>
+            </div>
+            <div class="device-row">
+              <div class="device-symbol">🚶</div>
+              <div><strong>Middle Gate (Touch)</strong><span id="middleGateDeviceText">Closed</span></div>
+              <span id="middleGateDot" class="status-dot"></span>
+            </div>
+            <div class="device-row">
+              <div class="device-symbol">💡</div>
+              <div><strong>Lampu Taman &amp; Jalan</strong><span id="gardenLampDeviceText">OFF</span></div>
+              <span id="gardenLampDot" class="status-dot"></span>
+            </div>
+            <div class="device-row">
+              <div class="device-symbol">🚘</div>
+              <div><strong>Lampu Garasi</strong><span id="garageLampDeviceText">OFF</span></div>
+              <span id="garageLampDot" class="status-dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel activity-preview">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">REAL-TIME</p>
+            <h3>Latest Activity</h3>
+          </div>
+          <button class="text-btn" onclick="showSection('activity')">View All →</button>
+        </div>
+        <div id="activityPreview" class="activity-list"></div>
+      </div>
+    </section>
+
+    <!-- CONTROL -->
+    <section id="control" class="section">
+      <div class="section-intro">
+        <p class="eyebrow">REMOTE CONTROL</p>
+        <h3>Smart Control Center</h3>
+        <p>Kontrol perangkat sekolah melalui internet menggunakan MQTT.</p>
+      </div>
+
+      <div class="control-grid">
+        <div class="control-card large">
+          <div class="control-title">
+            <span class="control-icon">🚪</span>
+            <div><h3>Main Gate — Vehicle</h3><p>Ultrasonic sensor + servo</p></div>
+          </div>
+          <div class="big-status" id="controlGateStatus">CLOSED</div>
+          <label class="switch-row touch-switch-row">
+            <span>
+              Aktifkan mode otomatis
+              <small id="ultrasonicHint" class="hint">Mode otomatis nonaktif — gerbang mobil hanya bergerak lewat tombol OPEN/CLOSE.</small>
+            </span>
+            <span class="switch-inline">
+              <span id="ultrasonicControlLabel">OFF</span>
+              <input id="ultrasonicSwitch" type="checkbox" onchange="toggleUltrasonicSensor(this.checked)">
+              <span class="switch"></span>
+            </span>
+          </label>
+          <div class="two-buttons">
+            <button class="primary-btn" onclick="sendGate('open')">OPEN</button>
+            <button class="secondary-btn" onclick="sendGate('close')">CLOSE</button>
+          </div>
+        </div>
+
+        <div class="control-card large touch-card">
+          <div class="control-title">
+            <span class="control-icon">✋</span>
+            <div><h3>Middle Gate — Touch Sensor</h3><p>2 servo (kiri &amp; kanan), diaktifkan manual dari web</p></div>
+          </div>
+          <div class="touch-stage">
+            <div id="touchPad" class="touch-pad">✋</div>
+            <div class="mini-road"></div>
+            <div id="middleGateArm" class="mini-gate-arm"></div>
+            <div class="mini-post"></div>
+          </div>
+
+          <div class="big-status" id="middleGateStatus">CLOSED</div>
+          <label class="switch-row touch-switch-row">
+            <span>
+              Aktifkan sensor touch
+              <small id="touchHint" class="hint">Sensor nonaktif — sentuhan tidak akan direspons.</small>
+            </span>
+            <span class="switch-inline">
+              <span id="touchControlLabel">OFF</span>
+              <input id="touchSwitch" type="checkbox" onchange="toggleTouchSensor(this.checked)">
+              <span class="switch"></span>
+            </span>
+          </label>
+          <div class="two-buttons">
+            <button class="secondary-btn" onclick="sendMiddleGate('open')">BUKA MANUAL</button>
+            <button class="secondary-btn" onclick="sendMiddleGate('close')">TUTUP MANUAL</button>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="control-title">
+            <span class="control-icon">💡</span>
+            <div><h3>Lampu Taman &amp; Jalan</h3><p>Sensor LDR (opsional) + tombol manual</p></div>
+          </div>
+          <label class="switch-row touch-switch-row">
+            <span>
+              Aktifkan sensor LDR
+              <small id="ldrHint" class="hint">Sensor nonaktif — gelap/terang tidak akan menyalakan lampu otomatis.</small>
+            </span>
+            <span class="switch-inline">
+              <span id="ldrControlLabel">OFF</span>
+              <input id="ldrSwitch" type="checkbox" onchange="toggleLdrSensor(this.checked)">
+              <span class="switch"></span>
+            </span>
+          </label>
+          <label class="switch-row">
+            <span id="gardenLampControlLabel">OFF</span>
+            <input id="gardenLampSwitch" type="checkbox" onchange="toggleGardenLamp(this.checked)">
+            <span class="switch"></span>
+          </label>
+        </div>
+
+        <div class="control-card">
+          <div class="control-title">
+            <span class="control-icon">🚘</span>
+            <div><h3>Lampu Garasi</h3><p>Relay on/off manual, tanpa sensor</p></div>
+          </div>
+          <label class="switch-row">
+            <span id="garageLampControlLabel">OFF</span>
+            <input id="garageLampSwitch" type="checkbox" onchange="toggleGarageLamp(this.checked)">
+            <span class="switch"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section id="activity" class="section">
+      <div class="section-intro row-between">
+        <div>
+          <p class="eyebrow">EVENT HISTORY</p>
+          <h3>Activity Log</h3>
+          <p>Riwayat event yang diterima dari ESP32.</p>
+        </div>
+        <button class="secondary-btn" onclick="clearActivity()">Clear Log</button>
+      </div>
+
+      <div class="panel">
+        <div id="activityFull" class="activity-list full"></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 <b id="footerSchool">Smart School</b></span>
+      <span>ESP32 • MQTT • IoT</span>
+    </footer>
+  </main>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
