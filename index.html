@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Sistem Monitoring & Kontrol IoT Smart School Home SMKN 56 Jakarta - Gerbang Otomatis, Sensor Touch, LDR & Smart Lighting.">
+  <title>Smart School Home — SMKN 56 Jakarta</title>
+  <link rel="icon" type="image/png" href="https://smksedkijakarta.wordpress.com/wp-content/uploads/2017/11/ngrt7ave_400x400.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ════════════════ AUTH / SIGN IN SCREEN ════════════════ -->
+  <div id="authScreen" class="auth-overlay">
+    <div class="auth-card" id="authCard">
+      <!-- Brand / Header -->
+      <div class="auth-header">
+        <div class="auth-icon">
+          <img src="https://smksedkijakarta.wordpress.com/wp-content/uploads/2017/11/ngrt7ave_400x400.png" alt="Logo SMKN 56" class="w-8 h-8 object-contain">
+        </div>
+        <h1 class="auth-title">Smart School Home</h1>
+        <p class="auth-subtitle">SMKN 56 Jakarta &bull; IoT Control Portal</p>
+      </div>
+
+      <!-- Alert Error Banner -->
+      <div id="authErrorAlert" class="auth-alert hidden" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="authErrorText">Username atau password salah!</span>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm" autocomplete="on">
+        <div class="form-group">
+          <label for="authUsernameInput" class="form-label">Username</label>
+          <input type="text" id="authUsernameInput" class="form-input" placeholder="Masukkan username" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="authPasswordInput" class="form-label">Password</label>
+          <div class="password-input-wrap">
+            <input type="password" id="authPasswordInput" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            <button type="button" id="authPasswordToggle" class="password-toggle-btn" aria-label="Lihat password" tabindex="-1">
+              <svg id="eyeIcon" class="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg id="eyeOffIcon" class="toggle-icon hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <label class="remember-label">
+            <input type="checkbox" id="authRememberMe" checked>
+            <span>Ingat sesi saya</span>
+          </label>
+          <button type="button" id="authForgotBtn" class="forgot-btn">Info Kredensial</button>
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="auth-submit-btn">
+          <span id="authSubmitText">Masuk ke Dashboard</span>
+          <div id="authSubmitSpinner" class="auth-spinner hidden"></div>
+        </button>
+      </form>
+
+      <div class="auth-footer-hint">
+        Akses Khusus Administrator Sekolah
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ MAIN APPLICATION ════════════════ -->
+  <div id="mainApp" class="app-layout app-locked">
+    
+    <!-- ───────── Sidebar ───────── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-logo" id="brandLogoWrap">
+          <img id="schoolLogo" src="https://smksedkijakarta.wordpress.com/wp-content/uploads/2017/11/ngrt7ave_400x400.png" alt="Logo SMKN 56">
+        </div>
+        <div class="brand-info">
+          <h1>SMART<span>SCHOOL</span></h1>
+          <p id="schoolName">SMKN 56 JAKARTA</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-section="dashboard" id="navDashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>
+          </svg>
+          <span>Dashboard</span>
+        </button>
+
+        <button class="nav-btn" data-section="control" id="navControl">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Smart Control</span>
+        </button>
+
+        <button class="nav-btn" data-section="activity" id="navActivity">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>Activity Log</span>
+          <span id="activityCountBadge" class="nav-counter">0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <!-- MQTT Connection Status Pill -->
+        <div class="connection-pill" id="connectionPill" title="Klik untuk Diagnostik Jaringan">
+          <div class="dot-wrapper">
+            <span class="dot offline" id="connectionDot"></span>
+          </div>
+          <span id="connectionText" class="font-mono text-[11px]">OFFLINE</span>
+        </div>
+
+        <!-- User Profile Pill -->
+        <div class="user-profile-pill">
+          <div class="user-avatar-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="user-info-text">
+            <strong id="sidebarUsername">Administrator</strong>
+            <small>Administrator</small>
+          </div>
+          <button id="sidebarLogoutBtn" class="logout-btn" title="Keluar dari sesi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ───────── Main Content ───────── -->
+    <main class="main">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="top-left">
+          <div class="flex items-center gap-2">
+            <h2 id="pageTitle">Dashboard</h2>
+            <span class="pill blue text-[11px]" id="heroSchool">IoT Control</span>
+          </div>
+          <p id="lastUpdate">Menghubungkan ke IoT Server...</p>
+        </div>
+
+        <div class="top-right">
+          <!-- Sound Toggle -->
+          <button id="soundToggleBtn" class="header-action-btn" title="Toggle Efek Audio">
+            <svg id="soundOnIcon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            </svg>
+            <svg id="soundOffIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+          </button>
+
+          <!-- Emergency Action -->
+          <button onclick="openEmergencyModal()" class="header-action-btn emergency-btn" title="Emergency Override">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>Darurat</span>
+          </button>
+
+          <!-- Monospace Clock Widget -->
+          <div class="clock-box">
+            <strong id="clock">00:00:00</strong>
+            <span id="date">Memuat tanggal...</span>
+          </div>
+
+          <!-- Mobile Hamburger -->
+          <button id="mobileMenu" class="icon-btn" aria-label="Buka Menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ════════════════ TAB 1: DASHBOARD ════════════════ -->
+      <section id="dashboard" class="section active">
+        
+        <!-- 4 Metric Stat Cards -->
+        <div class="stats-grid">
+          <!-- Card 1: Gerbang Kendaraan -->
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                    <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+                  </svg>
+                </div>
+                <span class="stat-label">Gerbang Kendaraan</span>
+              </div>
+              <span id="gateStatus" class="badge neutral">CLOSED</span>
+            </div>
+            <div class="stat-value-group">
+              <span id="gateStatusHero" class="stat-value">CLOSED</span>
+            </div>
+            <div class="flex items-center justify-between text-[11.5px] text-fog border-t border-ash pt-2">
+              <span>Servo 180° Actuator</span>
+              <span id="gateDeviceText" class="text-charcoal font-medium">Tertutup</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Radar Ultrasonic -->
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/>
+                    <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                    <path d="M12 2v2"/>
+                    <path d="M12 22v-2"/>
+                    <path d="m17 7-1.5 1.5"/>
+                  </svg>
+                </div>
+                <span class="stat-label">Radar Jarak (HC-SR04)</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span id="gateAutoBadge" class="badge neutral">AUTO OFF</span>
+                <span id="vehicleBadge" class="badge neutral">CLEAR</span>
+              </div>
+            </div>
+            <div class="stat-value-group">
+              <span id="distanceBig" class="stat-value font-mono">45.0</span>
+              <span class="text-xs font-mono text-fog font-medium">cm</span>
+            </div>
+            <div class="flex items-center justify-between text-[11.5px] text-fog border-t border-ash pt-2">
+              <span>Ambang Deteksi: &lt; 20 cm</span>
+              <span class="text-charcoal font-mono font-medium" id="distanceValue">45.0</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Gerbang Pejalan Kaki (Touch) -->
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
+                    <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/>
+                    <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/>
+                    <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                  </svg>
+                </div>
+                <span class="stat-label">Gerbang Pejalan (Touch)</span>
+              </div>
+              <span id="touchStatBadge" class="badge neutral">DISARMED</span>
+            </div>
+            <div class="stat-value-group">
+              <span id="touchStatValue" class="stat-value">CLOSED</span>
+            </div>
+            <div class="flex items-center justify-between text-[11.5px] text-fog border-t border-ash pt-2">
+              <span class="flex items-center gap-1.5">
+                <span id="middleGateDot" class="status-dot"></span>
+                <span>Sensor TTP223</span>
+              </span>
+              <span id="middleGateDeviceText" class="text-charcoal font-medium">Tertutup</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Penerangan Kampus -->
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                    <path d="M9 18h6"/>
+                    <path d="M10 22h4"/>
+                  </svg>
+                </div>
+                <span class="stat-label">Penerangan </span>
+              </div>
+              <div class="flex gap-1">
+                <span id="gardenLampBadge" class="badge neutral text-[10px]">TAMAN: OFF</span>
+                <span id="garageLampBadge" class="badge neutral text-[10px]">GARASI/RUMAH: OFF</span>
+              </div>
+            </div>
+            <div class="stat-value-group">
+              <span id="gardenLampValue" class="stat-value text-[19px]">OFF</span>
+              <span class="text-xs text-fog font-medium">/</span>
+              <span id="garageLampValue" class="stat-value text-[19px]">OFF</span>
+            </div>
+            <div class="flex items-center justify-between text-[11.5px] text-fog border-t border-ash pt-2">
+              <span>Mode Sensor LDR</span>
+              <span id="ldrBadge" class="badge neutral">OFF</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard 2-Column Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
+          
+          <!-- Left Column (8 cols): Telemetry Visualizer & Quick Actions -->
+          <div class="lg:col-span-8 flex flex-col gap-5">
+            
+            <!-- Live Telemetry Card -->
+            <div class="dub-card">
+              <div class="flex items-center justify-between pb-3 border-b border-ash">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="14" width="4" height="7" rx="1"/><path d="M5 14V4"/><path d="m5 7 14-3"/><path d="M19 4v17"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="font-display text-[15px] font-semibold text-midnight">Monitoring Gerbang Kendaraan</h3>
+                    <p class="text-xs text-fog">Telemetri sensor jarak dan posisi lengan palang pintu</p>
+                  </div>
+                </div>
+                <span class="pill success text-[10px]">
+                  <span class="status-dot on"></span> LIVE TELEMETRY
+                </span>
+              </div>
+
+              <!-- Schematic Minimal Stage -->
+              <div class="gate-visual-stage" id="gateStage">
+                <div class="stage-road"></div>
+                
+                <!-- Gate Post & Animated Arm -->
+                <div class="gate-post-wrap">
+                  <div class="gate-post">
+                    <div id="postLed" class="post-light"></div>
+                    <div class="w-1.5 h-1.5 bg-silver rounded-full"></div>
+                  </div>
+                  <div id="gateArm" class="gate-barrier-arm"></div>
+                </div>
+
+                <!-- Sonar Pulse Indicator -->
+                <div id="sonarEmitter" class="sonar-box">
+                  <div class="sonar-beam"></div>
+                </div>
+
+                <!-- Vehicle Icon Indicator -->
+                <div id="carIcon" class="vehicle-car">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                    <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+                  </svg>
+                  <span>MOBIL</span>
+                </div>
+              </div>
+
+              <!-- Gate Quick Control Buttons -->
+              <div class="flex items-center justify-between pt-2">
+                <div class="flex items-center gap-2">
+                  <button onclick="sendGate('open')" class="btn-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                    <span>Buka Gerbang</span>
+                  </button>
+                  <button onclick="sendGate('close')" class="btn-outlined">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    <span>Tutup Gerbang</span>
+                  </button>
+                </div>
+                <div class="text-xs text-fog">
+                  Status: <strong class="text-charcoal" id="gateDot">Terkunci</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Switches Card -->
+            <div class="dub-card">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-7 h-7 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <h3 class="font-display text-[15px] font-semibold text-midnight">Aksi Cepat &amp; Saklar</h3>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Switch 0: Ultrasonic Auto Gate -->
+                <div class="p-3 bg-paper rounded-inputs border border-ash flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-charcoal">Gerbang Otomatis</span>
+                    <label class="switch">
+                      <input type="checkbox" id="quickUltrasonicSwitch" onchange="toggleUltrasonicSensor(this.checked)">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <span class="text-[11px] text-fog" id="ultrasonicControlLabel">OFF (Manual)</span>
+                </div>
+
+                <!-- Switch 1: Touch Sensor -->
+                <div class="p-3 bg-paper rounded-inputs border border-ash flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-charcoal">Sensor Sentuh</span>
+                    <label class="switch">
+                      <input type="checkbox" id="quickTouchSwitch" onchange="toggleTouchSensor(this.checked)">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <span class="text-[11px] text-fog" id="touchControlLabel">OFF (Disarmed)</span>
+                </div>
+
+                <!-- Switch 2: LDR Auto Light -->
+                <div class="p-3 bg-paper rounded-inputs border border-ash flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-charcoal">LDR Otomatis</span>
+                    <label class="switch">
+                      <input type="checkbox" id="quickLdrSwitch" onchange="toggleLdrSensor(this.checked)">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <span class="text-[11px] text-fog" id="ldrControlLabel">OFF (Manual)</span>
+                </div>
+
+                <!-- Switch 3: Garage Lamp -->
+                <div class="p-3 bg-paper rounded-inputs border border-ash flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-charcoal">Lampu Garasi &amp; Rumah</span>
+                    <label class="switch">
+                      <input type="checkbox" id="quickGarageLampSwitch" onchange="toggleGarageLamp(this.checked)">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                  <span class="text-[11px] text-fog" id="garageLampControlLabel">OFF</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column (4 cols): Sensor Status & Recent Logs -->
+          <div class="lg:col-span-4 flex flex-col gap-5">
+            
+            <!-- Sensor Environmental Card -->
+            <div class="dub-card">
+              <div class="flex items-center gap-2 mb-3">
+                <div class="w-7 h-7 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                  </svg>
+                </div>
+                <h3 class="font-display text-[15px] font-semibold text-midnight">Status Sensor Lingkungan</h3>
+              </div>
+              
+              <div class="space-y-3">
+                <!-- Ultrasonic Sensor State -->
+                <div class="p-3 border border-ash rounded-inputs flex items-center justify-between">
+                  <div>
+                    <span class="block text-xs font-medium text-charcoal">Sensor Ultrasonik HC-SR04</span>
+                    <span class="block text-[11px] text-fog" id="ultrasonicHint">Nonaktif (Disarmed)</span>
+                  </div>
+                  <span id="ultrasonicPad" class="w-3 h-3 rounded-full bg-silver inline-block"></span>
+                </div>
+
+                <!-- LDR Ambient -->
+                <div class="p-3 border border-ash rounded-inputs flex items-center justify-between">
+                  <div>
+                    <span class="block text-xs font-medium text-charcoal">Sensor Cahaya (LDR)</span>
+                    <span class="block text-[11px] text-fog" id="envLdrText">TERANG (Siang Hari)</span>
+                  </div>
+                  <span id="ldrValue" class="badge neutral font-mono text-[11px]">TERANG</span>
+                </div>
+
+                <!-- Touch Sensor State -->
+                <div class="p-3 border border-ash rounded-inputs flex items-center justify-between">
+                  <div>
+                    <span class="block text-xs font-medium text-charcoal">Sensor Touch TTP223</span>
+                    <span class="block text-[11px] text-fog" id="touchHint">Sensor nonaktif (Disarmed)</span>
+                  </div>
+                  <span id="touchPad" class="w-3 h-3 rounded-full bg-silver inline-block"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity Mini Feed -->
+            <div class="dub-card flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between pb-2 border-b border-ash mb-2">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                      </svg>
+                    </div>
+                    <h3 class="font-display text-[14px] font-semibold text-midnight">Aktivitas Terkini</h3>
+                  </div>
+                  <button onclick="showSection('activity')" class="text-[11.5px] text-electric font-medium hover:underline">
+                    Lihat Semua &rarr;
+                  </button>
+                </div>
+                <div id="activityPreview" class="divide-y divide-ash">
+                  <!-- Injected via app.js -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ════════════════ TAB 2: SMART CONTROL ════════════════ -->
+      <section id="control" class="section">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          
+          <!-- Control 1: Gerbang Utama (Kendaraan) -->
+          <div class="dub-card">
+            <div class="flex items-center justify-between pb-3 border-b border-ash mb-4">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                    <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-display text-[15px] font-semibold text-midnight">Gerbang Utama (Kendaraan)</h3>
+                  <p class="text-xs text-fog">Aktuator Servo motor °</p>
+                </div>
+              </div>
+              <span id="controlGateStatus" class="badge neutral">CLOSED</span>
+            </div>
+
+            <p class="text-xs text-steel mb-4">
+              Ada dua mode: buka/tutup manual lewat tombol di bawah, atau mode otomatis — begitu diaktifkan, sensor ultrasonik yang mengendalikan gerbang sepenuhnya.
+            </p>
+
+            <!-- Ultrasonic AUTO Switch Row -->
+            <div class="p-3 bg-paper rounded-inputs border border-ash flex items-center justify-between mb-4">
+              <div>
+                <strong class="block text-xs font-medium text-charcoal">Mode Otomatis Ultrasonik</strong>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="controlUltrasonicSwitch" onchange="toggleUltrasonicSensor(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="sendGate('open')" class="btn-blue flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                <span>Buka Gerbang</span>
+              </button>
+              <button onclick="sendGate('close')" class="btn-outlined flex-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <span>Tutup Gerbang</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Control 2: Gerbang Tengah (Pejalan Kaki) -->
+          <div class="dub-card">
+            <div class="flex items-center justify-between pb-3 border-b border-ash mb-4">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
+                    <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/>
+                    <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/>
+                    <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-display text-[15px] font-semibold text-midnight">Gerbang Tengah (Pejalan Kaki)</h3>
+                  <p class="text-xs text-fog">Sensor Sentuh TTP223</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span id="middleGateArm" class="status-dot"></span>
+                <span id="middleGateStatus" class="badge neutral">CLOSED</span>
+              </div>
+            </div>
+
+            <!-- Touch ARM Switch Row -->
+            <div class="p-3 bg-paper rounded-inputs border border-ash flex items-center justify-between mb-4">
+              <div>
+                <strong class="block text-xs font-medium text-charcoal">Mode Otomatis Touch Sensor</strong>
+                <small class="block text-[11px] text-fog">Saat aktif: sentuh sensor sekali untuk MEMBUKA gerbang, sentuh sekali lagi untuk MENUTUPNYA (toggle)</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="controlTouchSwitch" onchange="toggleTouchSensor(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="sendMiddleGate('open')" class="btn-primary flex-1">
+                <span>Buka Gerbang</span>
+              </button>
+              <button onclick="sendMiddleGate('close')" class="btn-outlined flex-1">
+                <span>Tutup Gerbang</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Control 3: Lampu Taman & Jalan (LDR) -->
+          <div class="dub-card" id="gardenLampVisual">
+            <div class="flex items-center justify-between pb-3 border-b border-ash mb-4">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                    <path d="M9 18h6"/>
+                    <path d="M10 22h4"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-display text-[15px] font-semibold text-midnight">Penerangan Taman &amp; Jalan</h3>
+                  <p class="text-xs text-fog">Relay Otomatisasi Sensor Cahaya LDR</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span id="gardenLampDot" class="status-dot"></span>
+                <span id="gardenLampDeviceText" class="badge neutral">Mati (OFF)</span>
+              </div>
+            </div>
+
+            <!-- LDR ARM Switch Row -->
+            <div class="p-3 bg-paper rounded-inputs border border-ash flex items-center justify-between mb-3">
+              <div>
+                <strong class="block text-xs font-medium text-charcoal">Otomatisasi LDR (Siang/Malam)</strong>
+                <small class="block text-[11px] text-fog" id="ldrHint">Nyalakan otomatis saat sensor membaca gelap</small>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="controlLdrSwitch" onchange="toggleLdrSensor(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <!-- Manual Lamp Switch Row -->
+            <div class="p-3 border border-ash rounded-inputs flex items-center justify-between">
+              <div>
+                <strong class="block text-xs font-medium text-charcoal">Saklar Manual Lampu Taman</strong>
+                <small class="block text-[11px] text-fog" id="gardenLampVisualText">LIGHTS OFF (MATI)</small>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="gardenLampControlLabel" class="text-xs text-fog">OFF</span>
+                <label class="switch">
+                  <input type="checkbox" id="gardenLampSwitch" onchange="toggleGardenLamp(this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Control 4: Lampu Garasi & Rumah (Relay AC + DC) -->
+          <div class="dub-card" id="garageLampVisual">
+            <div class="flex items-center justify-between pb-3 border-b border-ash mb-4">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-md bg-paper border border-ash flex items-center justify-center text-charcoal flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                    <path d="M3 9h18"/>
+                    <path d="M9 21V9"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="font-display text-[15px] font-semibold text-midnight">Lampu Garasi dan Lampu Rumah</h3>
+                  <p class="text-xs text-fog">Relay Saklar Manual — Garasi (AC) &amp; Rumah (DC)</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span id="garageLampDot" class="status-dot"></span>
+                <span id="garageLampDeviceText" class="badge neutral">Mati (OFF)</span>
+              </div>
+            </div>
+
+            <p class="text-xs text-steel mb-4">
+              Kontrol manual lampu area garasi. Gunakan saklar di bawah untuk menghidupkan atau mematikan.
+            </p>
+
+            <div class="p-3 bg-paper rounded-inputs border border-ash flex items-center justify-between">
+              <div>
+                <strong class="block text-xs font-medium text-charcoal">Saklar Lampu Garasi &amp; Rumah</strong>
+                <small class="block text-[11px] text-fog" id="garageLampVisualText">GARAGE LIGHTS OFF</small>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="controlGarageLampControlLabel" class="text-xs text-fog">OFF</span>
+                <label class="switch">
+                  <input type="checkbox" id="controlGarageLampSwitch" onchange="toggleGarageLamp(this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ════════════════ TAB 3: ACTIVITY LOG ════════════════ -->
+      <section id="activity" class="section">
+        
+        <div class="dub-card">
+          <!-- Activity Header -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ash mb-4">
+            <div>
+              <h3 class="font-display text-[16px] font-semibold text-midnight">Activity Log &amp; Audit Trail</h3>
+              <p class="text-xs text-fog">Rekam jejak seluruh operasi otomatis dan manual sistem IoT</p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button onclick="exportActivityLog()" class="btn-outlined">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Export CSV</span>
+              </button>
+              <button onclick="clearActivity()" class="btn-ghost text-red-600 hover:bg-red-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                <span>Bersihkan</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filters & Search Bar -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div class="flex flex-wrap gap-1.5">
+              <button class="filter-tab-btn active" onclick="setActivityFilter('all', this)">Semua</button>
+              <button class="filter-tab-btn" onclick="setActivityFilter('command', this)">Perintah</button>
+              <button class="filter-tab-btn" onclick="setActivityFilter('event', this)">Event Sensor</button>
+              <button class="filter-tab-btn" onclick="setActivityFilter('system', this)">Sistem</button>
+              <button class="filter-tab-btn" onclick="setActivityFilter('alert', this)">Alert</button>
+            </div>
+
+            <div class="w-full sm:w-64">
+              <input type="text" id="activitySearchInput" class="form-input text-xs" placeholder="Cari aktivitas..." oninput="handleActivitySearch(this.value)">
+            </div>
+          </div>
+
+          <!-- Log Item Container -->
+          <div id="activityFull" class="divide-y divide-ash min-h-[280px]">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Footer -->
+      <footer class="mt-12 pt-6 border-t border-ash flex flex-col sm:flex-row items-center justify-between text-xs text-fog gap-2">
+        <p>&copy; 2026 <strong class="text-charcoal" id="footerSchool">SMKN 56 Jakarta</strong> — IoT Smart Campus Portal</p>
+        <div class="flex items-center gap-2">
+          <span class="pill neutral text-[10px]">HiveMQ Cloud</span>
+          <span class="pill neutral text-[10px]">MQTT.js</span>
+          <span class="pill neutral text-[10px]">WebSockets</span>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- ════════════════ MODALS ════════════════ -->
+
+  <!-- 1. MQTT Connection Diagnostics Modal -->
+  <div id="diagnosticsModal" class="modal-backdrop hidden" onclick="if(event.target === this) closeDiagnosticsModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h3>MQTT Connection Diagnostics</h3>
+          <p>Status telemetri koneksi broker HiveMQ Cloud</p>
+        </div>
+        <button class="close-modal-btn" onclick="closeDiagnosticsModal()" aria-label="Tutup">✕</button>
+      </div>
+
+      <div class="modal-body space-y-3">
+        <div class="p-3 bg-paper rounded-inputs border border-ash">
+          <span class="block text-[11px] text-fog">Broker Host URL:</span>
+          <strong id="diagBrokerHost" class="font-mono text-xs text-midnight break-all">--</strong>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 bg-paper rounded-inputs border border-ash">
+            <span class="block text-[11px] text-fog">Device Client ID:</span>
+            <strong id="diagDeviceId" class="font-mono text-xs text-midnight">--</strong>
+          </div>
+          <div class="p-3 bg-paper rounded-inputs border border-ash">
+            <span class="block text-[11px] text-fog">Status Jaringan:</span>
+            <strong id="diagConnStatus" class="font-mono text-xs text-midnight">OFFLINE</strong>
+          </div>
+        </div>
+
+        <div class="p-3 bg-paper rounded-inputs border border-ash flex items-center justify-between">
+          <span class="text-[11px] text-fog">Paket Telemetri Diterima:</span>
+          <strong id="diagPacketCount" class="font-mono text-xs text-midnight">0</strong>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-outlined text-xs" onclick="closeDiagnosticsModal()">Tutup</button>
+        <button class="btn-blue text-xs" onclick="reconnectMQTT()">Hubungkan Ulang</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Emergency Override Modal -->
+  <div id="emergencyModal" class="modal-backdrop hidden" onclick="if(event.target === this) closeEmergencyModal()">
+    <div class="modal-card border-red-200">
+      <div class="modal-header bg-red-50">
+        <div class="modal-title-wrap">
+          <h3 class="text-red-700">Prosedur Darurat</h3>
+          <p class="text-red-600">Perintah override prioritas tertinggi untuk gerbang dan lampu</p>
+        </div>
+        <button class="close-modal-btn" onclick="closeEmergencyModal()" aria-label="Tutup">✕</button>
+      </div>
+
+      <div class="modal-body space-y-3">
+        <button class="w-full p-3 text-left border border-red-200 bg-red-50 hover:bg-red-100 rounded-inputs transition flex items-center gap-3 text-red-800" onclick="emergencyOpenAll()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+          <div>
+            <strong class="block text-xs font-semibold">BUKA SEMUA GERBANG (EVAKUASI)</strong>
+            <small class="block text-[11px] text-red-600">Membuka gerbang kendaraan, pejalan kaki, dan menyalakan lampu.</small>
+          </div>
+        </button>
+
+        <button class="w-full p-3 text-left border border-ash bg-paper hover:bg-smoke rounded-inputs transition flex items-center gap-3 text-charcoal" onclick="emergencyCloseAll()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div>
+            <strong class="block text-xs font-semibold">KUNCI SEMUA GERBANG (LOCKDOWN)</strong>
+            <small class="block text-[11px] text-fog">Menutup semua gerbang dan mendisarm sensor sentuh.</small>
+          </div>
+        </button>
+
+        <button class="w-full p-3 text-left border border-ash bg-paper hover:bg-smoke rounded-inputs transition flex items-center gap-3 text-charcoal" onclick="emergencyAllLightsOn()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
+          <div>
+            <strong class="block text-xs font-semibold">NYALAKAN SEMUA PENERANGAN</strong>
+            <small class="block text-[11px] text-fog">Menyalakan seluruh penerangan taman, jalan, dan garasi seketika.</small>
+          </div>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-outlined text-xs" onclick="closeEmergencyModal()">Batalkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
